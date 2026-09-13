@@ -105,5 +105,12 @@
         }
       }
     }
+  },
+  "entity": {
+    "binary_sensor": {
+      "present": {
+        "name": "Present"
+      }
+    }
   }
 }
