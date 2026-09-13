@@ -146,7 +146,9 @@ class FindMyPresenceBinarySensor(BinarySensorEntity, RestoreEntity):
         self._observed_at = observation.detected_at
         self._mac_address = observation.mac_address
         self._local_state = observation.state
-        self._battery = observation.battery_level
+        if observation.battery_level is not None:
+            # DULT advertisements carry no battery level; keep the last Offline Finding one.
+            self._battery = observation.battery_level
         self._mark_seen(observation.detected_at, observation.rssi, source)
         self._update_state(force_write=True)
 
