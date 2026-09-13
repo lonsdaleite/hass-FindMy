@@ -65,8 +65,10 @@ class FindMyPresenceBinarySensor(BinarySensorEntity, RestoreEntity):
     Bluetooth history, which is updated for every advertisement.
     """
 
+    # No entity name: like the device tracker, the sensor represents the accessory itself and is
+    # listed under the accessory's name instead of a generic "Present".
     _attr_has_entity_name = True
-    _attr_translation_key = "present"
+    _attr_name = None
     _attr_device_class = BinarySensorDeviceClass.PRESENCE
     _attr_should_poll = False
     _unrecorded_attributes = frozenset(
