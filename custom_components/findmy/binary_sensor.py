@@ -41,6 +41,7 @@ _LOGGER = logging.getLogger(__name__)
 _REFRESH_INTERVAL = timedelta(seconds=30)
 # Attribute-only updates are rate-limited so that recorder is not written every refresh.
 _ATTRIBUTE_UPDATE_DELAY = timedelta(minutes=5)
+_MAX_RECORDED_GAP = timedelta(hours=2)
 
 
 async def async_setup_entry(
@@ -99,6 +100,8 @@ class FindMyPresenceBinarySensor(BinarySensorEntity, RestoreEntity):
         self._battery: str | None = None
         # Longest silence between two advertisements heard since startup, in seconds.
         self._max_gap: float = 0.0
+        # False until an advertisement is heard in this run; the restored last_seen is a guess.
+        self._gap_tracking = False
         self._last_write: datetime | None = None
 
     @property
@@ -166,8 +169,12 @@ class FindMyPresenceBinarySensor(BinarySensorEntity, RestoreEntity):
         if self._last_seen is not None:
             if heard_at <= self._last_seen:
                 return
-            if self._attr_is_on:
-                self._max_gap = max(self._max_gap, (heard_at - self._last_seen).total_seconds())
+            gap = heard_at - self._last_seen
+            # Gaps are recorded regardless of the away timeout so they can be used to tune it;
+            # silences longer than _MAX_RECORDED_GAP are treated as the accessory having left.
+            if self._gap_tracking and gap <= _MAX_RECORDED_GAP:
+                self._max_gap = max(self._max_gap, gap.total_seconds())
+        self._gap_tracking = True
         self._last_seen = heard_at
         self._rssi = rssi
         self._source = source
