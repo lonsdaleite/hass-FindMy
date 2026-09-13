@@ -12,7 +12,7 @@ from .storage import RuntimeStorage
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS = [Platform.DEVICE_TRACKER]
+PLATFORMS = [Platform.DEVICE_TRACKER, Platform.BINARY_SENSOR]
 
 
 async def async_setup(hass: HomeAssistant, _config: ConfigEntry) -> bool:

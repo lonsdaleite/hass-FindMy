@@ -94,5 +94,23 @@
         "rolling": "Rolling-key tag (AirTag)"
       }
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Local presence",
+        "description": "The accessory is reported away when Home Assistant Bluetooth has not heard it for this long.",
+        "data": {
+          "away_timeout": "Away timeout"
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "present": {
+        "name": "Present"
+      }
+    }
   }
 }
