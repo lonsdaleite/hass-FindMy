@@ -3,7 +3,7 @@
 DOMAIN = "findmy"
 
 CONF_AWAY_TIMEOUT = "away_timeout"
-DEFAULT_AWAY_TIMEOUT_MINUTES = 20
+DEFAULT_AWAY_TIMEOUT_MINUTES = 10
 
 
 def signal_local_observation(unique_id: str) -> str:
