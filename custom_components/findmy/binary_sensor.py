@@ -1,4 +1,4 @@
-"""FindMy binary_sensor platform: battery-low flag for automations."""
+"""FindMy binary_sensor platform: battery-low flag and local presence."""
 
 from __future__ import annotations
 
@@ -13,6 +13,8 @@ from homeassistant.core import callback
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
+from findmy import FindMyAccessory
+
 from ._entity import (
     battery_bits,
     build_device_info,
@@ -20,6 +22,7 @@ from ._entity import (
     latest_report,
 )
 from .coordinator import FindMyCoordinator, FindMyDevice
+from .presence import FindMyPresenceBinarySensor
 from .storage import RuntimeStorage
 
 if TYPE_CHECKING:
@@ -44,9 +47,13 @@ async def async_setup_entry(
         raise ConfigEntryNotReady(msg)
 
     storage = RuntimeStorage.get(hass)
-    async_add_entities(
-        (FindMyBatteryLowBinarySensor(storage.coordinator, item, entry.entry_id),),
-    )
+    entities: list[BinarySensorEntity] = [
+        FindMyBatteryLowBinarySensor(storage.coordinator, item, entry.entry_id),
+    ]
+    if isinstance(item, FindMyAccessory):
+        # Only accessories with derived rolling keys are matched against local advertisements.
+        entities.append(FindMyPresenceBinarySensor(item, entry.entry_id))
+    async_add_entities(entities)
 
     return True
 
